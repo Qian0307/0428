@@ -1,0 +1,145 @@
+import React, { useState, useEffect } from "react";
+
+const QUESTS = [
+  {
+    id: 1,
+    title: "詞語封印解鎖",
+    type: "mcq",
+    question: "以下哪一個是正向情緒詞？",
+    options: ["忐忑不安", "心花怒放", "悲傷", "焦慮"],
+    answer: "心花怒放",
+    xp: 20
+  },
+  {
+    id: 2,
+    title: "閱讀迷霧森林",
+    type: "mcq",
+    question: "小明考試失利後沉默不語，他可能的心情是？",
+    options: ["開心", "沮喪", "興奮", "無感"],
+    answer: "沮喪",
+    xp: 30
+  },
+  {
+    id: 3,
+    title: "語言鍛造屋",
+    type: "mcq",
+    question: "哪一句表達最具情緒張力？",
+    options: [
+      "他很開心",
+      "他笑了",
+      "他喜出望外，眼中閃著光",
+      "他走路"
+    ],
+    answer: "他喜出望外，眼中閃著光",
+    xp: 30
+  },
+  {
+    id: 4,
+    title: "語意混亂獸（Boss）",
+    type: "input",
+    question: "請修正句子：昨天我學校很開心去因為考試",
+    answer: "昨天因為考試，我很開心地去學校",
+    xp: 50
+  }
+];
+
+export default function ChineseRPG() {
+  const [xp, setXp] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [index, setIndex] = useState(0);
+  const [input, setInput] = useState("");
+  const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("rpg_xp");
+    if (saved) setXp(Number(saved));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("rpg_xp", xp);
+    setLevel(Math.floor(xp / 50) + 1);
+  }, [xp]);
+
+  const quest = QUESTS[index];
+
+  const addXP = (amount) => setXp((p) => p + amount);
+
+  const nextQuest = () => {
+    setInput("");
+    setFeedback("");
+    setIndex((i) => Math.min(i + 1, QUESTS.length - 1));
+  };
+
+  const checkAnswer = (value) => {
+    if (value === quest.answer) {
+      setFeedback("正確 +XP");
+      addXP(quest.xp);
+      setTimeout(nextQuest, 800);
+    } else {
+      setFeedback("錯誤，重新思考語意");
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-2xl mx-auto font-sans">
+      <h1 className="text-2xl font-bold">國文 RPG：文字偵探</h1>
+
+      <div className="mt-2 text-sm">
+        Level: {level} ｜ XP: {xp}
+      </div>
+
+      <div className="mt-6 p-4 border rounded-xl">
+        <h2 className="font-semibold">{quest.title}</h2>
+        <p className="mt-2">{quest.question}</p>
+
+        {quest.type === "mcq" && (
+          <div className="mt-4 space-y-2">
+            {quest.options.map((opt) => (
+              <button
+                key={opt}
+                className="block w-full p-2 border rounded"
+                onClick={() => checkAnswer(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {quest.type === "input" && (
+          <div className="mt-4">
+            <input
+              className="border p-2 w-full"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <button
+              className="mt-2 px-4 py-2 border rounded"
+              onClick={() => checkAnswer(input)}
+            >
+              提交
+            </button>
+          </div>
+        )}
+
+        <div className="mt-3 text-sm text-gray-600">{feedback}</div>
+      </div>
+
+      <div className="mt-4 flex gap-2">
+        <button
+          className="px-3 py-1 border rounded"
+          onClick={() => addXP(10)}
+        >
+          教師加分
+        </button>
+
+        <button
+          className="px-3 py-1 border rounded"
+          onClick={() => setIndex(0)}
+        >
+          重置任務
+        </button>
+      </div>
+    </div>
+  );
+}
