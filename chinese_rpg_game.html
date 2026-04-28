@@ -1,0 +1,600 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1410;
+    --paper: #fdf8f0;
+    --paper2: #f5ede0;
+    --paper3: #ede0cc;
+    --red: #c0392b;
+    --red-light: #f8e8e6;
+    --gold: #b8860b;
+    --gold-light: #fdf3d0;
+    --green: #2d6a4f;
+    --green-light: #e8f5ee;
+    --blue: #1a4a8a;
+    --blue-light: #e8eef8;
+    --purple: #5b2d8e;
+    --purple-light: #f0eaf8;
+    --muted: #8a7a6a;
+    --border: #d4c4a8;
+  }
+
+  body { background: var(--paper); font-family: 'Noto Sans TC', sans-serif; }
+
+  #app {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px;
+    min-height: 100vh;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--ink);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(184,134,11,0.15);
+  }
+  .header-title { font-family: 'Noto Serif TC', serif; font-size: 22px; font-weight: 900; color: #fdf8f0; letter-spacing: 2px; }
+  .header-sub { font-size: 12px; color: var(--gold); letter-spacing: 1px; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--paper);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 2px; }
+  .stat-value { font-size: 20px; font-weight: 700; font-family: 'Noto Serif TC', serif; color: var(--ink); }
+  .stat-value.gold { color: var(--gold); }
+  .stat-value.red { color: var(--red); }
+
+  .xp-bar-wrap { margin-bottom: 16px; }
+  .xp-bar-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .xp-bar-bg { height: 8px; background: var(--paper3); border-radius: 4px; overflow: hidden; }
+  .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold) 0%, #d4a017 100%); border-radius: 4px; transition: width 0.6s ease; }
+
+  .quest-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .quest-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 14px 14px 0 0;
+    background: var(--gold);
+  }
+  .quest-card.boss::before { background: var(--red); }
+  .quest-card.complete::before { background: var(--green); }
+
+  .quest-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .quest-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; font-family: 'Noto Serif TC', serif;
+    flex-shrink: 0;
+  }
+  .quest-icon.mcq { background: var(--blue-light); color: var(--blue); }
+  .quest-icon.input { background: var(--red-light); color: var(--red); }
+  .quest-icon.reading { background: var(--purple-light); color: var(--purple); }
+  .quest-icon.writing { background: var(--green-light); color: var(--green); }
+
+  .quest-meta { flex: 1; }
+  .quest-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .quest-type-tag {
+    display: inline-block;
+    font-size: 11px; padding: 2px 8px; border-radius: 20px; margin-top: 2px;
+  }
+  .tag-mcq { background: var(--blue-light); color: var(--blue); }
+  .tag-input { background: var(--red-light); color: var(--red); }
+  .tag-reading { background: var(--purple-light); color: var(--purple); }
+  .tag-writing { background: var(--green-light); color: var(--green); }
+
+  .xp-badge {
+    background: var(--gold-light); color: var(--gold);
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    border: 1px solid #e8d080;
+  }
+
+  .question-text {
+    font-size: 16px; line-height: 1.8; color: var(--ink);
+    font-family: 'Noto Serif TC', serif;
+    background: var(--paper2);
+    border-radius: 8px; padding: 14px 16px;
+    margin-bottom: 16px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt-btn {
+    padding: 12px 14px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px; font-family: 'Noto Sans TC', sans-serif;
+    color: var(--ink); cursor: pointer;
+    text-align: left; line-height: 1.4;
+    transition: all 0.15s;
+  }
+  .opt-btn:hover { background: var(--paper2); border-color: var(--gold); }
+  .opt-btn.correct { background: var(--green-light); border-color: var(--green); color: var(--green); font-weight: 700; }
+  .opt-btn.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .opt-btn:disabled { cursor: default; }
+
+  .input-area { display: flex; flex-direction: column; gap: 8px; }
+  .text-input {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 15px; font-family: 'Noto Serif TC', serif; color: var(--ink);
+    background: var(--paper); outline: none;
+    transition: border-color 0.15s;
+  }
+  .text-input:focus { border-color: var(--gold); }
+  .submit-btn {
+    padding: 12px 24px; background: var(--ink); color: var(--paper);
+    border: none; border-radius: 10px; font-size: 15px;
+    font-family: 'Noto Sans TC', sans-serif; font-weight: 700;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .submit-btn:hover { opacity: 0.85; }
+
+  .feedback-box {
+    margin-top: 12px; padding: 12px 16px; border-radius: 10px;
+    font-size: 14px; line-height: 1.6;
+    display: none;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.ok { background: var(--green-light); color: var(--green); border: 1px solid #a8d5b8; }
+  .feedback-box.bad { background: var(--red-light); color: var(--red); border: 1px solid #e8b0aa; }
+
+  .nav-row {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .nav-btn {
+    padding: 9px 16px; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--paper); color: var(--ink); cursor: pointer;
+    transition: all 0.15s; font-weight: 500;
+  }
+  .nav-btn:hover { background: var(--paper2); }
+  .nav-btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .nav-btn.primary:hover { opacity: 0.85; }
+  .nav-btn.gold { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+  .progress-text { font-size: 12px; color: var(--muted); margin-left: auto; align-self: center; }
+
+  .map-section {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px;
+    margin-bottom: 16px;
+  }
+  .map-title { font-size: 13px; color: var(--muted); margin-bottom: 10px; letter-spacing: 0.5px; }
+  .map-grid {
+    display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px;
+  }
+  .map-dot {
+    aspect-ratio: 1; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700;
+    cursor: pointer; transition: transform 0.1s;
+    border: 1px solid transparent;
+  }
+  .map-dot:hover { transform: scale(1.15); }
+  .map-dot.done { background: var(--green); color: #fff; }
+  .map-dot.current { background: var(--gold); color: #fff; border-color: var(--ink); }
+  .map-dot.boss { background: var(--red-light); color: var(--red); border-color: var(--red); }
+  .map-dot.locked { background: var(--paper2); color: var(--muted); border-color: var(--border); }
+
+  .level-up-banner {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--ink); color: var(--gold);
+    padding: 14px 28px; border-radius: 40px;
+    font-family: 'Noto Serif TC', serif; font-size: 18px; font-weight: 900;
+    z-index: 999; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap; pointer-events: none;
+  }
+  .level-up-banner.show { transform: translateX(-50%) translateY(0); }
+
+  .all-done {
+    text-align: center; padding: 40px 20px;
+    font-family: 'Noto Serif TC', serif;
+  }
+  .all-done h2 { font-size: 28px; color: var(--gold); margin-bottom: 12px; }
+  .all-done p { font-size: 16px; color: var(--muted); line-height: 1.8; }
+</style>
+
+<div id="app">
+  <div class="header">
+    <div>
+      <div class="header-title">國文 RPG：文字偵探</div>
+      <div class="header-sub">100 道關卡 · 征服語文秘境</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">等級</div><div class="stat-value gold" id="stat-level">1</div></div>
+    <div class="stat-card"><div class="stat-label">經驗值</div><div class="stat-value" id="stat-xp">0</div></div>
+    <div class="stat-card"><div class="stat-label">連勝</div><div class="stat-value red" id="stat-streak">0</div></div>
+    <div class="stat-card"><div class="stat-label">完成</div><div class="stat-value" id="stat-done">0/100</div></div>
+  </div>
+
+  <div class="xp-bar-wrap">
+    <div class="xp-bar-top"><span>Lv <span id="xp-lv">1</span></span><span id="xp-label">0 / 100 XP</span></div>
+    <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="map-section">
+    <div class="map-title">任務地圖（點擊跳關）</div>
+    <div class="map-grid" id="map-grid"></div>
+  </div>
+
+  <div id="quest-area"></div>
+
+  <div class="nav-row" id="nav-row">
+    <button class="nav-btn gold" id="btn-bonus" onclick="teacherBonus()">教師加分 +10</button>
+    <button class="nav-btn" onclick="resetAll()">重置全部</button>
+    <span class="progress-text" id="progress-text"></span>
+  </div>
+</div>
+
+<div class="level-up-banner" id="level-banner">⬆ 升級！</div>
+
+<script>
+const QUESTS = [
+  {id:1,title:"詞語封印解鎖",type:"mcq",q:"以下哪一個是正向情緒詞？",opts:["忐忑不安","心花怒放","悲傷","焦慮"],ans:"心花怒放",xp:20,cat:"mcq"},
+  {id:2,title:"閱讀迷霧森林",type:"mcq",q:"小明考試失利後沉默不語，他可能的心情是？",opts:["開心","沮喪","興奮","無感"],ans:"沮喪",xp:20,cat:"reading"},
+  {id:3,title:"語言鍛造屋",type:"mcq",q:"哪一句表達最具情緒張力？",opts:["他很開心","他笑了","他喜出望外，眼中閃著光","他走路"],ans:"他喜出望外，眼中閃著光",xp:30,cat:"writing"},
+  {id:4,title:"語意混亂獸（Boss）",type:"input",q:"請修正句子：昨天我學校很開心去因為考試",ans:"昨天因為考試，我很開心地去學校",xp:50,cat:"input"},
+  {id:5,title:"反義詞陣",type:"mcq",q:"「勇敢」的反義詞是？",opts:["大膽","怯懦","謹慎","堅強"],ans:"怯懦",xp:20,cat:"mcq"},
+  {id:6,title:"詞性鑑定所",type:"mcq",q:"「跑步」在句子「他每天跑步」中是什麼詞性？",opts:["名詞","動詞","形容詞","副詞"],ans:"動詞",xp:20,cat:"mcq"},
+  {id:7,title:"成語解碼器",type:"mcq",q:"「半途而廢」形容什麼？",opts:["做事認真","中途放棄","堅持到底","猶豫不決"],ans:"中途放棄",xp:25,cat:"mcq"},
+  {id:8,title:"標點符號塔",type:"mcq",q:"下列哪個標點符號用來表達疑問？",opts:["。","，","？","！"],ans:"？",xp:15,cat:"mcq"},
+  {id:9,title:"修辭魔法陣",type:"mcq",q:"「她的笑容是陽光」使用了什麼修辭？",opts:["誇飾","比喻","擬人","排比"],ans:"比喻",xp:30,cat:"writing"},
+  {id:10,title:"句型挑戰者",type:"input",q:"將以下句子改為否定句：「他喜歡吃蘋果。」",ans:"他不喜歡吃蘋果。",xp:30,cat:"input"},
+  {id:11,title:"詞語辨析關",type:"mcq",q:"「因為……所以……」是什麼關係？",opts:["並列","轉折","因果","假設"],ans:"因果",xp:20,cat:"mcq"},
+  {id:12,title:"字義探索洞",type:"mcq",q:"「本末倒置」中「本」指的是什麼？",opts:["末端","根本","書本","原本"],ans:"根本",xp:25,cat:"mcq"},
+  {id:13,title:"比喻分析台",type:"mcq",q:"「月亮像玉盤」是明喻還是暗喻？",opts:["明喻","暗喻","擬人","借代"],ans:"明喻",xp:25,cat:"writing"},
+  {id:14,title:"閱讀推理室",type:"mcq",q:"文章中說「他低下了頭」，最可能的情緒是？",opts:["驕傲","羞愧","憤怒","喜悅"],ans:"羞愧",xp:30,cat:"reading"},
+  {id:15,title:"成語補全術",type:"input",q:"請完成成語：「一鼓___氣」",ans:"作",xp:20,cat:"input"},
+  {id:16,title:"主謂賓大戰",type:"mcq",q:"「小貓喝牛奶」的主語是？",opts:["小貓","喝","牛奶","句中無主語"],ans:"小貓",xp:20,cat:"mcq"},
+  {id:17,title:"語境感知陣",type:"mcq",q:"「今天天氣不錯」在哪個語境最合適？",opts:["吵架時","寒暄打招呼時","道歉時","說再見時"],ans:"寒暄打招呼時",xp:20,cat:"reading"},
+  {id:18,title:"詞彙補充站",type:"mcq",q:"「他說話___，讓人聽不清楚」，空格最適合填入？",opts:["洪亮","清晰","含糊","流利"],ans:"含糊",xp:25,cat:"mcq"},
+  {id:19,title:"詞義演化窟",type:"mcq",q:"「狗尾續貂」的涵義是？",opts:["讚美後繼者","批評作品低劣","形容動物習性","描述天氣變化"],ans:"批評作品低劣",xp:30,cat:"mcq"},
+  {id:20,title:"語法惡龍（Boss）",type:"input",q:"請改正：「我昨天很有趣去動物園看動物。」",ans:"我昨天去動物園看動物，很有趣。",xp:60,cat:"input"},
+  {id:21,title:"同義詞迷宮",type:"mcq",q:"下列哪個詞與「美麗」意義最接近？",opts:["醜陋","俊俏","高大","聰明"],ans:"俊俏",xp:20,cat:"mcq"},
+  {id:22,title:"字形辨識所",type:"mcq",q:"「己」和「已」，填入「自___」應用哪個字？",opts:["己","已","巳","不確定"],ans:"己",xp:25,cat:"mcq"},
+  {id:23,title:"量詞鍛鍊場",type:"mcq",q:"「一___鳥」，正確的量詞是？",opts:["條","隻","頭","棵"],ans:"隻",xp:20,cat:"mcq"},
+  {id:24,title:"排列組合陣",type:"mcq",q:"哪個排列語意最完整？",opts:["書他看","他看書","看書他","書看他"],ans:"他看書",xp:20,cat:"mcq"},
+  {id:25,title:"成語故事館",type:"mcq",q:"「守株待兔」告訴我們什麼道理？",opts:["要勤奮努力","不能靠僥倖","要有耐心","要幫助他人"],ans:"不能靠僥倖",xp:30,cat:"reading"},
+  {id:26,title:"情緒詞庫關",type:"mcq",q:"「義憤填膺」描述的是什麼情緒？",opts:["悲傷","憤怒","喜悅","恐懼"],ans:"憤怒",xp:25,cat:"mcq"},
+  {id:27,title:"對話補完術",type:"input",q:"完成對話：甲「你好嗎？」乙「___。」（用一句合適的話回應）",ans:"我很好，謝謝你！",xp:25,cat:"writing"},
+  {id:28,title:"擬人辨識台",type:"mcq",q:"「風兒輕輕地笑了」用了什麼修辭？",opts:["比喻","擬人","誇飾","排比"],ans:"擬人",xp:25,cat:"writing"},
+  {id:29,title:"主題推測窟",type:"mcq",q:"一篇文章結尾寫「只要努力，夢想終將實現」，主題最可能是？",opts:["自然科學","勵志成長","歷史故事","日常生活"],ans:"勵志成長",xp:30,cat:"reading"},
+  {id:30,title:"造句Boss戰",type:"input",q:"用「雖然……但是……」造一個句子",ans:"雖然今天下雨，但是我還是去跑步了。",xp:60,cat:"input"},
+  {id:31,title:"詞類判斷室",type:"mcq",q:"「快樂地唱歌」中「快樂地」是什麼詞？",opts:["形容詞","副詞","名詞","動詞"],ans:"副詞",xp:25,cat:"mcq"},
+  {id:32,title:"語氣識別站",type:"mcq",q:"「你一定要記得帶傘！」語氣是？",opts:["疑問","感嘆","祈使","陳述"],ans:"祈使",xp:25,cat:"mcq"},
+  {id:33,title:"文章結構塔",type:"mcq",q:"「總說—分說—總說」是哪種文章結構？",opts:["時間順序","總分總結構","空間順序","問題解答"],ans:"總分總結構",xp:30,cat:"reading"},
+  {id:34,title:"詞語搭配關",type:"mcq",q:"「___勇氣」，最自然的搭配動詞是？",opts:["吃","拿","鼓起","穿"],ans:"鼓起",xp:20,cat:"mcq"},
+  {id:35,title:"長短句辨析",type:"mcq",q:"下列哪句是短句（句子較短、有力）？",opts:["他跑了過來，上氣不接下氣地喊著救命。","他跑來。","他非常快速地跑了過來找我說話。","他用很快的速度跑了過來。"],ans:"他跑來。",xp:25,cat:"writing"},
+  {id:36,title:"字義辨析牆",type:"mcq",q:"「他做事馬虎」中「馬虎」是什麼意思？",opts:["非常快速","粗心大意","十分勇敢","仔細認真"],ans:"粗心大意",xp:20,cat:"mcq"},
+  {id:37,title:"接龍挑戰站",type:"input",q:"「學習」→「習慣」→「慣___」（請填入一個詞接龍）",ans:"例",xp:20,cat:"input"},
+  {id:38,title:"段落主旨室",type:"mcq",q:"段落說「他每天早起讀書，從不偷懶」，主旨是？",opts:["描述早晨風景","強調他的勤奮","說明讀書方法","介紹早餐習慣"],ans:"強調他的勤奮",xp:30,cat:"reading"},
+  {id:39,title:"詞語程度站",type:"mcq",q:"下列詞語程度最強的是？",opts:["有點難過","很難過","悲痛欲絕","心情不好"],ans:"悲痛欲絕",xp:25,cat:"mcq"},
+  {id:40,title:"語法巫師（Boss）",type:"input",q:"改寫為被動句：「老師表揚了小明。」",ans:"小明被老師表揚了。",xp:70,cat:"input"},
+  {id:41,title:"詞語填空關",type:"mcq",q:"「他___了一口氣，放鬆下來。」填入？",opts:["吸","深呼吸","吐","喘"],ans:"深呼吸",xp:20,cat:"mcq"},
+  {id:42,title:"找錯字大挑戰",type:"mcq",q:"下列哪個詞語有錯別字？",opts:["心曠神怡","一事無成","草木皆兵","漫不京心"],ans:"漫不京心",xp:30,cat:"mcq"},
+  {id:43,title:"語境選詞站",type:"mcq",q:"「他___地點了點頭，表示同意。」最適合填入？",opts:["憤怒","輕輕","高聲","緩慢"],ans:"輕輕",xp:20,cat:"mcq"},
+  {id:44,title:"句子擴充術",type:"input",q:"擴充句子（加入修飾語）：「小狗跑了。」",ans:"活潑的小狗歡快地跑了過來。",xp:30,cat:"writing"},
+  {id:45,title:"韻腳辨析所",type:"mcq",q:"以下哪兩個字押韻（讀音相近）？",opts:["花/風","山/天","書/雨","月/雪"],ans:"山/天",xp:25,cat:"writing"},
+  {id:46,title:"詞語對比牆",type:"mcq",q:"「整齊」的反義詞是？",opts:["美麗","雜亂","清潔","安靜"],ans:"雜亂",xp:20,cat:"mcq"},
+  {id:47,title:"疊詞秘境",type:"mcq",q:"「慢慢地」是什麼詞？",opts:["名詞","動詞","副詞","形容詞"],ans:"副詞",xp:20,cat:"mcq"},
+  {id:48,title:"借代修辭關",type:"mcq",q:"「請問您這裡有沒有毛筆」，「毛筆」借代為？",opts:["書法","鉛筆","水彩","粉筆"],ans:"書法",xp:30,cat:"writing"},
+  {id:49,title:"情節推理窟",type:"mcq",q:"故事說「她看著照片哭了」，最可能的情節是？",opts:["她照片很美","她想念遠方的人","她怕照相","她不喜歡照片"],ans:"她想念遠方的人",xp:30,cat:"reading"},
+  {id:50,title:"語文大魔王（Boss）",type:"input",q:"請用「不但……而且……」造一個有關學習的句子",ans:"他不但認真聽課，而且每天複習功課。",xp:80,cat:"input"},
+  {id:51,title:"語意層次台",type:"mcq",q:"「他說話滴水不漏」意思是？",opts:["說話不清楚","說話非常周全","說話很慢","說話很大聲"],ans:"說話非常周全",xp:25,cat:"mcq"},
+  {id:52,title:"形容詞鑑定所",type:"mcq",q:"「高大威武的將軍」中，哪個詞是形容詞？",opts:["將軍","高大威武","的","一個"],ans:"高大威武",xp:20,cat:"mcq"},
+  {id:53,title:"通感修辭關",type:"mcq",q:"「她的歌聲甜蜜如蜂蜜」使用了？",opts:["擬人","比喻（通感）","誇飾","排比"],ans:"比喻（通感）",xp:35,cat:"writing"},
+  {id:54,title:"古文入門窟",type:"mcq",q:"「溫故而知新」中「故」的意思是？",opts:["舊知識","朋友","故鄉","理由"],ans:"舊知識",xp:30,cat:"reading"},
+  {id:55,title:"語句補完站",type:"input",q:"請完成諺語：「一分耕耘，___」",ans:"一分收穫",xp:25,cat:"input"},
+  {id:56,title:"文章體裁辨",type:"mcq",q:"以「記敘文」為主的文章，最重視什麼？",opts:["說理論證","事件敘述","景物描寫","數據統計"],ans:"事件敘述",xp:25,cat:"reading"},
+  {id:57,title:"比較級造句",type:"mcq",q:"「A比B高」是什麼句型？",opts:["比較句","被動句","否定句","疑問句"],ans:"比較句",xp:20,cat:"mcq"},
+  {id:58,title:"情緒詞升級",type:"mcq",q:"「興高采烈」的意思最接近？",opts:["非常悲傷","極度興奮快樂","輕微開心","平靜安詳"],ans:"極度興奮快樂",xp:25,cat:"mcq"},
+  {id:59,title:"說明文特徵",type:"mcq",q:"說明文最主要的目的是？",opts:["抒發情感","講述故事","傳遞知識","說服讀者"],ans:"傳遞知識",xp:25,cat:"reading"},
+  {id:60,title:"修辭中Boss",type:"input",q:"請用排比造句（三個以上相似結構）",ans:"他勤奮讀書，他認真練習，他積極思考。",xp:80,cat:"writing"},
+  {id:61,title:"詞語接龍 II",type:"input",q:"「努力」→「力氣」→「氣___」（請填一個詞）",ans:"象",xp:20,cat:"input"},
+  {id:62,title:"句子成分析",type:"mcq",q:"「老師認真地批改作業」的謂語是？",opts:["老師","認真地","批改","作業"],ans:"批改",xp:25,cat:"mcq"},
+  {id:63,title:"詞義辨別窟",type:"mcq",q:"「黎明」是什麼時候？",opts:["正午","傍晚","天剛亮時","深夜"],ans:"天剛亮時",xp:20,cat:"mcq"},
+  {id:64,title:"詩歌意象關",type:"mcq",q:"古詩中「梅花」常象徵什麼？",opts:["財富","堅貞不屈","悲傷","愛情"],ans:"堅貞不屈",xp:30,cat:"reading"},
+  {id:65,title:"語氣強弱辨",type:"mcq",q:"哪個句子語氣最強烈？",opts:["請你安靜。","你能安靜嗎？","安靜！","我希望你安靜。"],ans:"安靜！",xp:20,cat:"writing"},
+  {id:66,title:"詞語填充站",type:"mcq",q:"「___一新」，填入最合適的詞？",opts:["煥然","截然","顯然","昂然"],ans:"煥然",xp:25,cat:"mcq"},
+  {id:67,title:"古詩補全台",type:"input",q:"補全古詩：「床前明月光，___」",ans:"疑是地上霜",xp:30,cat:"input"},
+  {id:68,title:"閱讀細節關",type:"mcq",q:"文章說「他的眼圈紅了」，這表示什麼？",opts:["他很生氣","他快哭了","他睡眠不足","他跑步流汗"],ans:"他快哭了",xp:25,cat:"reading"},
+  {id:69,title:"成語活用術",type:"mcq",q:"「名副其實」的反義詞是？",opts:["名不虛傳","徒有虛名","名列前茅","聲名大噪"],ans:"徒有虛名",xp:30,cat:"mcq"},
+  {id:70,title:"語法終極Boss",type:"input",q:"用「即使……也……」造一個句子",ans:"即使明天下大雨，我也要準時上學。",xp:90,cat:"input"},
+  {id:71,title:"詞語辨析 II",type:"mcq",q:"「觀看」和「瀏覽」的主要區別是？",opts:["前者更仔細","後者更仔細","兩者相同","後者指閱讀"],ans:"前者更仔細",xp:25,cat:"mcq"},
+  {id:72,title:"文章線索關",type:"mcq",q:"文章以「一張舊照片」為線索，這屬於哪種線索？",opts:["時間線索","情感線索","物品線索","人物線索"],ans:"物品線索",xp:30,cat:"reading"},
+  {id:73,title:"誇飾修辭站",type:"mcq",q:"「他等了一萬年」使用什麼修辭？",opts:["比喻","誇飾","擬人","借代"],ans:"誇飾",xp:25,cat:"writing"},
+  {id:74,title:"疊詞妙用台",type:"input",q:"用疊詞完成句子：「他___地走進教室。」（填入一個疊詞副詞）",ans:"慢慢",xp:20,cat:"writing"},
+  {id:75,title:"詞語層次析",type:"mcq",q:"「憤怒」、「生氣」、「不滿」，程度由強到弱排列？",opts:["憤怒>生氣>不滿","生氣>憤怒>不滿","不滿>生氣>憤怒","憤怒>不滿>生氣"],ans:"憤怒>生氣>不滿",xp:30,cat:"mcq"},
+  {id:76,title:"人稱視角室",type:"mcq",q:"「我看到了一隻蝴蝶」使用哪種人稱？",opts:["第一人稱","第二人稱","第三人稱","無人稱"],ans:"第一人稱",xp:20,cat:"reading"},
+  {id:77,title:"標點高手關",type:"mcq",q:"「他說：『我來了。』」外層的標點是？",opts:["引號","書名號","破折號","冒號"],ans:"冒號",xp:20,cat:"mcq"},
+  {id:78,title:"文意推論窟",type:"mcq",q:"文章說「她把禮物藏在背後」，最可能的下文是？",opts:["她把禮物扔掉了","她要給人驚喜","她不想要禮物","她迷路了"],ans:"她要給人驚喜",xp:30,cat:"reading"},
+  {id:79,title:"詞語活用術",type:"mcq",q:"「綠油油的草地」中「綠油油」是？",opts:["名詞","動詞","疊字形容詞","量詞"],ans:"疊字形容詞",xp:25,cat:"mcq"},
+  {id:80,title:"語文征服者（Boss）",type:"input",q:"請用第三人稱改寫：「我非常喜歡讀書，我每天都讀一小時。」",ans:"他非常喜歡讀書，他每天都讀一小時。",xp:100,cat:"input"},
+  {id:81,title:"語意關聯站",type:"mcq",q:"「手舞足蹈」最可能用於哪種場合？",opts:["考試失敗後","得到好消息時","遇到困難時","感到疲倦時"],ans:"得到好消息時",xp:20,cat:"mcq"},
+  {id:82,title:"句型轉換台",type:"input",q:"改為感嘆句：「這個故事很感人。」",ans:"這個故事多麼感人啊！",xp:25,cat:"writing"},
+  {id:83,title:"修辭辨析室",type:"mcq",q:"「春天是個美麗的少女」是什麼修辭？",opts:["明喻","暗喻","擬人","借代"],ans:"暗喻",xp:30,cat:"writing"},
+  {id:84,title:"詞義推敲關",type:"mcq",q:"「他說話拐彎抹角」意思是？",opts:["說話直接","說話不直接","說話很快","說話很慢"],ans:"說話不直接",xp:25,cat:"mcq"},
+  {id:85,title:"段落銜接術",type:"mcq",q:"「首先……其次……最後……」是哪種段落結構？",opts:["並列","遞進","轉折","總分"],ans:"遞進",xp:30,cat:"reading"},
+  {id:86,title:"字義比較窟",type:"mcq",q:"「果斷」和「武斷」的區別是？",opts:["前者帶正面評價","後者帶正面評價","兩者都是褒義","兩者都是貶義"],ans:"前者帶正面評價",xp:30,cat:"mcq"},
+  {id:87,title:"對仗辨析台",type:"mcq",q:"「春風送暖入屠蘇」的對句是？",opts:["窗含西嶺千秋雪","萬紫千紅總是春","總把新桃換舊符","孤舟蓑笠翁"],ans:"總把新桃換舊符",xp:35,cat:"reading"},
+  {id:88,title:"敘事角度站",type:"mcq",q:"「他感到心跳加速，卻不知道為什麼」，這是哪種敘事？",opts:["全知視角","第一人稱","有限第三人稱","客觀視角"],ans:"有限第三人稱",xp:35,cat:"reading"},
+  {id:89,title:"詞語活化術",type:"input",q:"造句（用「五彩繽紛」形容一樣東西）",ans:"天空中出現了五彩繽紛的彩虹。",xp:25,cat:"writing"},
+  {id:90,title:"語言藝術Boss",type:"input",q:"用「……像……一樣……」造一個明喻句",ans:"她的笑容像陽光一樣溫暖。",xp:90,cat:"writing"},
+  {id:91,title:"詞語辨析 III",type:"mcq",q:"「驕傲」在哪個句子是褒義？",opts:["他驕傲自大","他為自己的成就感到驕傲","他驕傲地拒絕了幫助","他的驕傲讓朋友不喜歡"],ans:"他為自己的成就感到驕傲",xp:30,cat:"mcq"},
+  {id:92,title:"閱讀整合室",type:"mcq",q:"一篇文章包含「問題、分析、解決」，屬於哪種結構？",opts:["並列式","問題解答式","時間順序式","空間順序式"],ans:"問題解答式",xp:30,cat:"reading"},
+  {id:93,title:"詩詞意境關",type:"mcq",q:"「舉頭望明月，低頭思故鄉」表達什麼情感？",opts:["對未來的期待","對故鄉的思念","對朋友的掛念","對自然的讚美"],ans:"對故鄉的思念",xp:30,cat:"reading"},
+  {id:94,title:"語法精煉站",type:"input",q:"刪去多餘詞語：「他今天非常地很開心。」",ans:"他今天非常開心。",xp:30,cat:"input"},
+  {id:95,title:"詞語搭配 II",type:"mcq",q:"「___精神」，最自然的修飾語是？",opts:["黑暗","振奮","破舊","混亂"],ans:"振奮",xp:20,cat:"mcq"},
+  {id:96,title:"說服技巧台",type:"mcq",q:"論說文中，引用名人名言是為了？",opts:["使文章更長","增加說服力","讓讀者感動","填補篇幅"],ans:"增加說服力",xp:30,cat:"reading"},
+  {id:97,title:"語言精緻關",type:"mcq",q:"哪個詞最能精確描述「非常傷心」？",opts:["有點難過","心如刀割","輕微不適","略感憂傷"],ans:"心如刀割",xp:25,cat:"mcq"},
+  {id:98,title:"文章昇華術",type:"mcq",q:"文章結尾通常承擔什麼功能？",opts:["引出話題","展開論點","總結昇華","介紹背景"],ans:"總結昇華",xp:30,cat:"reading"},
+  {id:99,title:"最終修辭戰",type:"input",q:"請用「擬人」手法，讓「秋天」說一句話",ans:"秋天輕聲說：「我來了，帶著金黃的禮物。」",xp:50,cat:"writing"},
+  {id:100,title:"語文終極Boss",type:"input",q:"寫一個完整的三句話段落，描述你最喜歡的季節，需包含至少一個修辭手法。",ans:"我最喜歡春天。春風像母親的手，輕輕撫摸著大地。萬物甦醒，到處充滿生機。",xp:120,cat:"writing"}
+];
+
+const ICONS = {mcq:"選",input:"寫",reading:"讀",writing:"文"};
+
+let state = {
+  xp: 0, level: 1, streak: 0,
+  done: new Array(100).fill(false),
+  current: 0,
+  answered: false
+};
+
+function save() {
+  try {
+    localStorage.setItem('rpg_v3', JSON.stringify({xp:state.xp,done:state.done,current:state.current,streak:state.streak}));
+  } catch(e){}
+}
+
+function load() {
+  try {
+    const d = localStorage.getItem('rpg_v3');
+    if(d) {
+      const p = JSON.parse(d);
+      state.xp = p.xp||0;
+      state.done = p.done||new Array(100).fill(false);
+      state.current = p.current||0;
+      state.streak = p.streak||0;
+    }
+  } catch(e){}
+  state.level = Math.floor(state.xp/100)+1;
+}
+
+function xpForLevel(lv) { return lv*100; }
+
+function updateStats() {
+  const lv = Math.floor(state.xp/100)+1;
+  state.level = lv;
+  document.getElementById('stat-level').textContent = lv;
+  document.getElementById('stat-xp').textContent = state.xp;
+  document.getElementById('stat-streak').textContent = state.streak;
+  const doneCount = state.done.filter(Boolean).length;
+  document.getElementById('stat-done').textContent = doneCount+'/100';
+  document.getElementById('xp-lv').textContent = lv;
+  const base = (lv-1)*100;
+  const need = 100;
+  const cur = state.xp - base;
+  document.getElementById('xp-label').textContent = `${Math.min(cur,need)} / ${need} XP`;
+  document.getElementById('xp-bar').style.width = Math.min(100,(cur/need)*100)+'%';
+}
+
+function buildMap() {
+  const grid = document.getElementById('map-grid');
+  grid.innerHTML = '';
+  for(let i=0;i<100;i++){
+    const q = QUESTS[i];
+    const dot = document.createElement('div');
+    dot.className = 'map-dot';
+    dot.title = q.title;
+    dot.textContent = i+1;
+    if(state.done[i]) dot.classList.add('done');
+    else if(i===state.current) dot.classList.add('current');
+    else if(q.type==='input' && q.title.includes('Boss')) dot.classList.add('boss');
+    else dot.classList.add('locked');
+    dot.onclick = () => { state.current=i; state.answered=false; renderQuest(); buildMap(); };
+    grid.appendChild(dot);
+  }
+}
+
+function renderQuest() {
+  const area = document.getElementById('quest-area');
+  if(state.current >= 100) {
+    const done = state.done.filter(Boolean).length;
+    if(done === 100) {
+      area.innerHTML = `<div class="all-done"><h2>🎊 恭喜通關！</h2><p>你完成了全部 100 道任務<br>累計 ${state.xp} XP · 等級 ${state.level}<br>語文偵探的稱號是你的了！</p></div>`;
+    } else {
+      state.current = state.done.findIndex(x=>!x);
+      if(state.current<0) state.current=0;
+    }
+    return;
+  }
+  const q = QUESTS[state.current];
+  const isBoss = q.title.includes('Boss');
+  const isDone = state.done[state.current];
+
+  let typeLabel = q.type==='mcq'?'選擇題':'填空題';
+  let typeClass = q.cat||q.type;
+
+  let optionsHTML = '';
+  if(q.type==='mcq'){
+    optionsHTML = `<div class="options-grid" id="opts">` +
+      q.opts.map(o=>`<button class="opt-btn" onclick="checkMCQ(this,'${o.replace(/'/g,"\\'")}','${q.ans.replace(/'/g,"\\'")}',${q.xp})">${o}</button>`).join('') +
+      `</div>`;
+  } else {
+    optionsHTML = `<div class="input-area">
+      <input class="text-input" id="ans-input" placeholder="在此輸入答案…" />
+      <button class="submit-btn" onclick="checkInput(${q.xp})">提交答案</button>
+    </div>`;
+  }
+
+  area.innerHTML = `
+    <div class="quest-card${isBoss?' boss':''}${isDone?' complete':''}">
+      <div class="quest-header">
+        <div class="quest-icon ${typeClass}">${ICONS[typeClass]||'題'}</div>
+        <div class="quest-meta">
+          <div class="quest-title">${q.title}</div>
+          <span class="quest-type-tag tag-${typeClass}">${typeLabel}</span>
+        </div>
+        <div class="xp-badge">+${q.xp} XP</div>
+      </div>
+      <div class="question-text">${q.q}</div>
+      ${optionsHTML}
+      <div class="feedback-box" id="fb"></div>
+      ${isDone?'<div style="margin-top:12px;font-size:13px;color:var(--green);font-weight:700;">✓ 此題已完成</div>':''}
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <button class="nav-btn" onclick="prevQuest()">← 上一題</button>
+      <button class="nav-btn primary" onclick="nextQuest()">下一題 →</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--muted);align-self:center;">第 ${state.current+1} / 100 題</span>
+    </div>
+  `;
+
+  const inp = document.getElementById('ans-input');
+  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') checkInput(q.xp); });
+}
+
+function checkMCQ(btn, chosen, ans, xp) {
+  const opts = document.querySelectorAll('.opt-btn');
+  opts.forEach(b=>b.disabled=true);
+  if(chosen===ans){
+    btn.classList.add('correct');
+    showFeedback(true, `正確！＋${xp} XP`, ans, xp);
+  } else {
+    btn.classList.add('wrong');
+    opts.forEach(b=>{ if(b.textContent===ans) b.classList.add('correct'); });
+    showFeedback(false, `答錯了，正確答案是「${ans}」`, ans, xp);
+  }
+}
+
+function checkInput(xp) {
+  const inp = document.getElementById('ans-input');
+  if(!inp) return;
+  const val = inp.value.trim();
+  const q = QUESTS[state.current];
+  const correct = val===q.ans || val.replace(/[，。！？、]/g,'')===q.ans.replace(/[，。！？、]/g,'');
+  inp.disabled = true;
+  document.querySelector('.submit-btn').disabled = true;
+  if(correct){
+    inp.style.borderColor = 'var(--green)';
+    showFeedback(true, `正確！＋${xp} XP`, q.ans, xp);
+  } else {
+    inp.style.borderColor = 'var(--red)';
+    showFeedback(false, `答案：「${q.ans}」`, q.ans, xp);
+  }
+}
+
+let prevLevel = 1;
+function showFeedback(ok, msg, ans, xp) {
+  const fb = document.getElementById('fb');
+  if(!fb) return;
+  fb.className = 'feedback-box show '+(ok?'ok':'bad');
+  fb.textContent = (ok?'✓ ':'✗ ')+msg;
+  if(ok && !state.done[state.current]){
+    state.done[state.current]=true;
+    state.streak++;
+    const oldLevel = state.level;
+    state.xp += xp;
+    state.level = Math.floor(state.xp/100)+1;
+    save();
+    updateStats();
+    buildMap();
+    if(state.level > oldLevel) showLevelUp();
+    setTimeout(()=>nextQuest(), 1400);
+  } else if(!ok) {
+    state.streak=0;
+    updateStats();
+  }
+}
+
+function showLevelUp() {
+  const b = document.getElementById('level-banner');
+  b.textContent = `⬆ 升級！現在是 Lv.${state.level}`;
+  b.classList.add('show');
+  setTimeout(()=>b.classList.remove('show'),2200);
+}
+
+function nextQuest() {
+  const next = state.done.findIndex((d,i)=>!d && i>state.current);
+  if(next>=0) state.current=next;
+  else {
+    const first = state.done.findIndex(d=>!d);
+    state.current = first>=0?first:state.current+1;
+  }
+  if(state.current>=100) state.current=99;
+  state.answered=false;
+  renderQuest();
+  buildMap();
+}
+
+function prevQuest() {
+  if(state.current>0) state.current--;
+  state.answered=false;
+  renderQuest();
+  buildMap();
+}
+
+function teacherBonus() {
+  state.xp+=10;
+  const oldLevel = state.level;
+  state.level = Math.floor(state.xp/100)+1;
+  if(state.level>oldLevel) showLevelUp();
+  save();
+  updateStats();
+}
+
+function resetAll() {
+  if(!confirm('確定要重置所有進度嗎？')) return;
+  state = {xp:0,level:1,streak:0,done:new Array(100).fill(false),current:0,answered:false};
+  try{localStorage.removeItem('rpg_v3');}catch(e){}
+  updateStats();
+  buildMap();
+  renderQuest();
+}
+
+load();
+updateStats();
+buildMap();
+renderQuest();
+</script>
